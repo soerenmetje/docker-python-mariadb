@@ -1,0 +1,32 @@
+version: "3.5"
+
+services:
+  db:
+    image: mariadb:10.8
+    ports:
+      - "4242:3306"
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: rootbigpp
+      # Other ------
+      TZ: Europe/Berlin
+    volumes:
+      - "mysql-data:/var/lib/mysql"
+      - ./mysql_init:/docker-entrypoint-initdb.d # create tables at container creation
+
+  web:
+    build: ./py-service
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      MYSQL_HOST: db # dns resolves actual address
+      MYSQL_DATABASE: mydb
+      MYSQL_PORT: 3306
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+
+volumes:
+  mysql-data:
